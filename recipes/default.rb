@@ -108,7 +108,7 @@ end
 execute "composer-install" do
   user  node[:apache][:user]
   group node[:apache][:group]
-  cwd "/var/www/concrete5/web/concrete"
+  cwd File.join(node[:concrete5][:install_path], 'web/concrete')
   command "composer install"
 end
 
@@ -131,6 +131,7 @@ bash "npm-install" do
   group  "vagrant"
   environment 'HOME' => '/home/' + node[:apache][:user]
   cwd "/var/www/concrete5/build"
+  cwd File.join(node[:concrete5][:install_path], 'build')
   code "npm install"
 end
 
