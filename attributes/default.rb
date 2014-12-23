@@ -13,13 +13,13 @@ default[:concrete5][:db][:pass] = nil
 default[:concrete5][:db][:host] = 'localhost'
 
 default[:concrete5][:composer][:home]         = '/home/vagrant/.composer'
-default[:concrete5][:composer][:install]    = 'curl -sS https://getcomposer.org/installer | php'
+default[:concrete5][:composer][:install]    = 'curl -sS https://raw.githubusercontent.com/composer/getcomposer.org/master/web/installer | php'
 default[:concrete5][:composer][:link]       = '/usr/local/bin/composer'
 
 default[:concrete5][:admin][:email]    = 'admin@example.com'
 default[:concrete5][:admin][:password] = 'concrete5'
 
-default[:concrete5][:starting_point] = 'blank'
+default[:concrete5][:starting_point] = 'elemental_blank' # elemental_blank or elemental_full
 default[:concrete5][:site]           = 'Concrete5 Site'
 default[:concrete5][:install_path]   = '/var/www/concrete5'
 default[:concrete5][:reinstall]      = 'no'
