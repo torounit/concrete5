@@ -99,26 +99,27 @@ link node[:concrete5][:composer][:link] do
 end
 
 directory node[:concrete5][:composer][:home] do
-  user  "vagrant"
-  group "vagrant"
+  user  node[:apache][:user]
+  group node[:apache][:group]
   recursive true
 end
 
 
-bash "composer-install" do
-  user   "vagrant"
-  group  "vagrant"
+execute "composer-install" do
+  user  node[:apache][:user]
+  group node[:apache][:group]
   cwd "/var/www/concrete5/web/concrete"
   command "composer install"
 end
 
-bash "npm-prefix-set" do
-  user   "root"
-  group  "root"
-  command "npm set prefix /home/vagrant/"
+if node['platform_family'] == "debian"
+  package "nodejs-legacy" do
+    action [:install, :upgrade]
+  end
 end
 
-bash "grunt-install" do
+
+execute "grunt-install" do
   user   "root"
   group  "root"
   command "npm install grunt-cli -g"
@@ -128,8 +129,9 @@ end
 bash "npm-install" do
   user   "vagrant"
   group  "vagrant"
+  environment 'HOME' => '/home/' + node[:apache][:user]
   cwd "/var/www/concrete5/build"
-  command "npm install"
+  code "npm install"
 end
 
 
