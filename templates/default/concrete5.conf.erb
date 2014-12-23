@@ -4,25 +4,31 @@
 
   EnableSendfile off
 
-  <Directory <%= @params[:docroot] %>>
-    Options FollowSymLinks
-    AllowOverride FileInfo Options
-    Order allow,deny
-    Allow from all
-  </Directory>
-
   <Directory />
     Options FollowSymLinks
     AllowOverride None
   </Directory>
 
+  <Directory <%= @params[:docroot] %>>
+    Options FollowSymLinks
+    AllowOverride FileInfo Options
+    <% if node['apache']['version'] != "2.4" -%>
+    Order allow,deny
+    Allow from all
+    <% else -%>
+    Require all granted
+    <% end -%>
+  </Directory>
+
+
+
   LogLevel info
   ErrorLog <%= node['apache']['log_dir'] %>/<%= @params[:name] %>-error.log
   CustomLog <%= node['apache']['log_dir'] %>/<%= @params[:name] %>-access.log combined
 
-  RewriteEngine On
-  RewriteLog <%= node['apache']['log_dir'] %>/<%= @application_name %>-rewrite.log
-  RewriteLogLevel 0
+  #RewriteEngine On
+  #RewriteLog <%= node['apache']['log_dir'] %>/<%= @application_name %>-rewrite.log
+  #RewriteLogLevel 0
 
 </VirtualHost>
 
