@@ -32,6 +32,15 @@ directory node['concrete5']['install_path'] do
   action :create
 end
 
+
+directory "/var/lib/php/session/" do
+  user   "root"
+  group  node[:apache][:group]
+  recursive true
+  action :create
+  mode   0770
+end
+
 directory node[:concrete5][:cli_dir] do
   recursive true
 end
@@ -73,6 +82,7 @@ template File.join(node[:concrete5][:install_path], 'config.php') do
   )
   action :create_if_missing
 end
+
 
 bash "concrete5-install" do
   user  node[:apache][:user]
