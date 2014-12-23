@@ -84,16 +84,6 @@ template File.join(node[:concrete5][:install_path], 'config.php') do
 end
 
 
-bash "concrete5-install" do
-  user  node[:apache][:user]
-  group node[:apache][:group]
-  cwd   node[:concrete5][:install_path]
-  code <<-EOH
-    #{File.join(node[:concrete5][:cli_dir], 'install-concrete5.php')} \\
-    --config=#{File.join(node[:concrete5][:install_path], 'config.php')}
-  EOH
-end
-
 directory File.join(node[:concrete5][:cli_dir], 'composer') do
   recursive true
 end
@@ -142,6 +132,16 @@ bash "npm-install" do
   environment 'HOME' => '/home/' + node[:apache][:user]
   cwd "/var/www/concrete5/build"
   code "npm install"
+end
+
+bash "concrete5-install" do
+  user  node[:apache][:user]
+  group node[:apache][:group]
+  cwd   node[:concrete5][:install_path]
+  code <<-EOH
+    #{File.join(node[:concrete5][:cli_dir], 'install-concrete5.php')} \\
+    --config=#{File.join(node[:concrete5][:install_path], 'config.php')}
+  EOH
 end
 
 
