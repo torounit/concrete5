@@ -8,10 +8,13 @@
 # Copyright 2014, DigitalCube, Inc.
 #
 
+require 'shellwords'
+
+
 include_recipe 'concrete5::swapfile'
 include_recipe "apt::default"
 
-packages = %w{git}
+packages = %w{git curl npm}
 
 packages.each do |pkg|
   package pkg do
@@ -80,4 +83,53 @@ bash "concrete5-install" do
     --config=#{File.join(node[:concrete5][:install_path], 'config.php')}
   EOH
 end
+
+directory File.join(node[:concrete5][:cli_dir], 'composer') do
+  recursive true
+end
+
+execute node[:concrete5][:composer][:install] do
+  user  "root"
+  group "root"
+  cwd   File.join(node[:concrete5][:cli_dir], 'composer')
+end
+
+link node[:concrete5][:composer][:link] do
+  to File.join(node[:concrete5][:cli_dir], 'composer/composer.phar')
+end
+
+directory node[:concrete5][:composer][:home] do
+  user  "vagrant"
+  group "vagrant"
+  recursive true
+end
+
+
+bash "composer-install" do
+  user   "vagrant"
+  group  "vagrant"
+  cwd "/var/www/concrete5/web/concrete"
+  command "composer install"
+end
+
+bash "npm-prefix-set" do
+  user   "root"
+  group  "root"
+  command "npm set prefix /home/vagrant/"
+end
+
+bash "grunt-install" do
+  user   "root"
+  group  "root"
+  command "npm install grunt-cli -g"
+end
+
+
+bash "npm-install" do
+  user   "vagrant"
+  group  "vagrant"
+  cwd "/var/www/concrete5/build"
+  command "npm install"
+end
+
 
