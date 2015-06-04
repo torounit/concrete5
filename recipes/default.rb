@@ -113,11 +113,25 @@ if node[:concrete5][:git_revision].to_f >= 5.7
     recursive true
   end
 
-  execute "composer-install" do
-    user  node[:apache][:user]
-    group node[:apache][:group]
-    cwd File.join(node[:concrete5][:install_path], 'web/concrete')
-    command "composer install"
+  if Gem::Version.new(node[:concrete5][:git_revision]) > Gem::Version.new('5.7.4.2')
+    execute "composer-install" do
+      user  node[:apache][:user]
+      group node[:apache][:group]
+      cwd File.join(node[:concrete5][:install_path], 'web/concrete')
+      command "composer install"
+    end
+  else
+    directory "/home/" + node[:apache][:user] + "/.composer/cache/vcs"  do
+      user  node[:apache][:user]
+      group node[:apache][:group]
+      recursive true
+    end
+    execute "composer-install" do
+      user  node[:apache][:user]
+      group node[:apache][:group]
+      cwd File.join(node[:concrete5][:install_path], 'web/concrete')
+      command "composer require zendframework/zend-mail -v 2.2.9 zendframework/zend-cache -v 2.2.9 zendframework/zend-http -v 2.2.9 zendframework/zend-feed -v 2.2.9 zendframework/zend-i18n -v 2.2.9"
+    end
   end
 
 
