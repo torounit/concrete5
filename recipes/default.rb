@@ -45,6 +45,8 @@ directory "/var/lib/php/session/" do
 end
 
 directory node[:concrete5][:cli_dir] do
+  owner node[:apache][:user]
+  group node[:apache][:group]
   recursive true
 end
 
@@ -94,6 +96,8 @@ if node[:concrete5][:git_revision].to_f >= 5.7
   #
 
   directory File.join(node[:concrete5][:cli_dir], 'composer') do
+    user  "root"
+    group "root"
     recursive true
   end
 
@@ -105,6 +109,8 @@ if node[:concrete5][:git_revision].to_f >= 5.7
 
   link node[:concrete5][:composer][:link] do
     to File.join(node[:concrete5][:cli_dir], 'composer/composer.phar')
+    user  node[:apache][:user]
+    group node[:apache][:group]
   end
 
   directory "/home/" + node[:apache][:user] + "/.composer"  do
@@ -156,6 +162,8 @@ if node[:concrete5][:git_revision].to_f >= 5.7
 
     remote_file File.join(node[:concrete5][:install_path], 'web/application/languages', node[:concrete5][:locale], "LC_MESSAGES", "messages.mo" ) do
       source File.join(node[:concrete5][:translations_repo_dir], "#{node[:concrete5][:locale]}.mo")
+      user   node[:apache][:user]
+      group  node[:apache][:group]
       mode 0644
       action :create
     end
