@@ -1,9 +1,7 @@
 require 'serverspec'
-$LOAD_PATH.concat Dir.glob('/opt/chef/embedded/lib/ruby/gems/1.9.1/gems/*/lib')
+set :backend, :exec
+$LOAD_PATH.concat Dir.glob('/opt/chef/embedded/lib/ruby/gems/2.1.0/gems/*/lib')
 require 'ohai'
-
-include Serverspec::Helper::Exec
-include Serverspec::Helper::DetectOS
 
 RSpec.configure do |c|
   ENV['LANG'] = 'C'
