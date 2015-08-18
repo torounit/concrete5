@@ -45,8 +45,6 @@ directory "/var/lib/php/session/" do
 end
 
 directory node[:concrete5][:cli_dir] do
-  owner node[:apache][:user]
-  group node[:apache][:group]
   recursive true
 end
 
@@ -96,8 +94,6 @@ if node[:concrete5][:git_revision].to_f >= 5.7
   #
 
   directory File.join(node[:concrete5][:cli_dir], 'composer') do
-    user  "root"
-    group "root"
     recursive true
   end
 
@@ -109,8 +105,6 @@ if node[:concrete5][:git_revision].to_f >= 5.7
 
   link node[:concrete5][:composer][:link] do
     to File.join(node[:concrete5][:cli_dir], 'composer/composer.phar')
-    user  node[:apache][:user]
-    group node[:apache][:group]
   end
 
   directory "/home/" + node[:apache][:user] + "/.composer"  do
@@ -119,25 +113,11 @@ if node[:concrete5][:git_revision].to_f >= 5.7
     recursive true
   end
 
-  if Gem::Version.new(node[:concrete5][:git_revision]) > Gem::Version.new('5.7.4.2')
-    execute "composer-install" do
-      user  node[:apache][:user]
-      group node[:apache][:group]
-      cwd File.join(node[:concrete5][:install_path], 'web/concrete')
-      command "composer install"
-    end
-  else
-    directory "/home/" + node[:apache][:user] + "/.composer/cache/vcs"  do
-      user  node[:apache][:user]
-      group node[:apache][:group]
-      recursive true
-    end
-    execute "composer-install" do
-      user  node[:apache][:user]
-      group node[:apache][:group]
-      cwd File.join(node[:concrete5][:install_path], 'web/concrete')
-      command "composer require zendframework/zend-mail -v 2.2.9 zendframework/zend-cache -v 2.2.9 zendframework/zend-http -v 2.2.9 zendframework/zend-feed -v 2.2.9 zendframework/zend-i18n -v 2.2.9"
-    end
+  execute "composer-install" do
+    user  node[:apache][:user]
+    group node[:apache][:group]
+    cwd File.join(node[:concrete5][:install_path], 'web/concrete')
+    command "composer install"
   end
 
 
@@ -162,8 +142,6 @@ if node[:concrete5][:git_revision].to_f >= 5.7
 
     remote_file File.join(node[:concrete5][:install_path], 'web/application/languages', node[:concrete5][:locale], "LC_MESSAGES", "messages.mo" ) do
       source File.join(node[:concrete5][:translations_repo_dir], "#{node[:concrete5][:locale]}.mo")
-      user   node[:apache][:user]
-      group  node[:apache][:group]
       mode 0644
       action :create
     end
